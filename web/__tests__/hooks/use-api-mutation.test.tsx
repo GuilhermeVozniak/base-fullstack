@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, mock } from "bun:test"
 import { renderHook, waitFor } from "@testing-library/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useApiMutation } from "@/lib/hooks/use-api-mutation"
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 
 describe("useApiMutation hook", () => {
   let queryClient: QueryClient

@@ -52,11 +52,10 @@ describe("error-handler plugin", () => {
 
   it("maps NOT_FOUND errors to 404", async () => {
     const app = createTestApp()
-    const api = treaty(app)
 
-    const { status } = await api.nonexistent.get()
+    const response = await app.handle(new Request("http://localhost/nonexistent"))
 
-    expect(status).toBe(404)
+    expect(response.status).toBe(404)
   })
 
   it("includes requestId in error context when header is present", async () => {

@@ -31,7 +31,7 @@ describe("health routes", () => {
     const { data } = await api.health.get()
 
     expect(typeof data?.timestamp).toBe("string")
-    expect(() => new Date(data?.timestamp)).not.toThrow()
+    expect(() => new Date(data!.timestamp)).not.toThrow()
   })
 
   it("GET /health response matches expected schema", async () => {

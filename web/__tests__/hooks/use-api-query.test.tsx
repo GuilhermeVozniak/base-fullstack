@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, mock } from "bun:test"
 import { renderHook, waitFor } from "@testing-library/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useApiQuery } from "@/lib/hooks/use-api-query"
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 
 describe("useApiQuery hook", () => {
   let queryClient: QueryClient
@@ -93,13 +93,12 @@ describe("useApiQuery hook", () => {
 
   it("handles query key updates", async () => {
     const mockData1 = { id: 1 }
-    const mockData2 = { id: 2 }
     const fetcher = mock(async () => ({
       data: mockData1,
       error: null,
     }))
 
-    const { result, rerender } = renderHook(
+    const { result } = renderHook(
       ({ key }) => useApiQuery(key, fetcher as () => Promise<{ data: typeof mockData1; error: null }>),
       {
         wrapper: createWrapper(),

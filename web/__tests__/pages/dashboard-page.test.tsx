@@ -54,7 +54,7 @@ const mockSession = {
 }
 
 const mockUseSession = mock(() => ({
-  data: mockSession,
+  data: mockSession as typeof mockSession | null,
   isPending: false,
 }))
 
