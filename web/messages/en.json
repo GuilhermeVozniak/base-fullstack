@@ -1,0 +1,13 @@
+{
+  "common": {
+    "appName": "base-fullstack",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "tryAgain": "Try again",
+    "goHome": "Go back home"
+  },
+  "notFound": {
+    "title": "404",
+    "description": "The page you're looking for doesn't exist."
+  }
+}

@@ -1,0 +1,59 @@
+name: base-fullstack
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: base-fullstack_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-base-fullstack}
+      POSTGRES_USER: ${POSTGRES_USER:-base-fullstack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-base-fullstack_password}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-base-fullstack} -d ${POSTGRES_DB:-base-fullstack}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: base-fullstack_backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}" # API port
+      - "9229:9229" # Debugger port
+    volumes:
+      - ./src:/app/src # Mount source for hot reload
+      - ./drizzle:/app/drizzle # Mount drizzle migrations
+      - ./drizzle.config.ts:/app/drizzle.config.ts
+      - bun_modules:/app/node_modules # Persist node_modules in volume
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-base-fullstack}:${POSTGRES_PASSWORD:-base-fullstack_password}@postgres:5432/${POSTGRES_DB:-base-fullstack}
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -f http://localhost:${PORT:-3000}/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
+  bun_modules:

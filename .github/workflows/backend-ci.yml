@@ -1,0 +1,151 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "packages/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "packages/**"
+      - ".github/workflows/backend-ci.yml"
+
+concurrency:
+  group: backend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-backend-${{ hashFiles('backend/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-backend-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+        working-directory: backend
+
+      - name: Run Biome check
+        run: bun run check
+        working-directory: backend
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-backend-${{ hashFiles('backend/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-backend-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+        working-directory: backend
+
+      - name: Run TypeScript type check
+        run: bun run typecheck
+        working-directory: backend
+
+  test-unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-backend-${{ hashFiles('backend/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-backend-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+        working-directory: backend
+
+      - name: Run unit tests
+        run: bun run test:unit
+        working-directory: backend
+
+  test-integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: base-fullstack
+          POSTGRES_PASSWORD: base-fullstack_password
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U base-fullstack"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: base-fullstack
+      POSTGRES_PASSWORD: base-fullstack_password
+      POSTGRES_DB: base_fullstack_test
+      PORT: 3333
+      BETTER_AUTH_URL: http://localhost:3333
+      BETTER_AUTH_SECRET: test-secret-for-ci
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-backend-${{ hashFiles('backend/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-backend-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+        working-directory: backend
+
+      - name: Run integration tests
+        run: bun run test:int
+        working-directory: backend
+
+      - name: Run repository tests
+        run: bun run test:repo
+        working-directory: backend

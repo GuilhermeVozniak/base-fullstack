@@ -1,0 +1,50 @@
+{
+  "folders": [
+    {
+      "name": "🔧 Backend",
+      "path": "backend",
+    },
+    {
+      "name": "📱 Web",
+      "path": "web",
+    },
+    {
+      "name": "📦 Shared",
+      "path": "packages",
+    },
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": true,
+      "**/bun.lock": true,
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/bun.lock": true,
+      "**/.expo": true,
+      "**/ios": true,
+      "**/android": true,
+    },
+    "files.eol": "\n",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "quickfix.biome": "explicit",
+      "source.organizeImports.biome": "explicit",
+    },
+  },
+  "extensions": {
+    "recommendations": [
+      "biomejs.biome",
+      "oven.bun-vscode",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "expo.vscode-expo-tools",
+    ],
+    "unwantedRecommendations": [],
+  },
+}

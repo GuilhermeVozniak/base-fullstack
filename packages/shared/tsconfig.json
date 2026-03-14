@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": "../../backend",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["bun-types"]
+  },
+  "include": ["index.ts", "../../backend/src/**/*.ts"]
+}
