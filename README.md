@@ -1,157 +1,199 @@
-# base-fullstack
+<p align="center">
+  <img src="docs/assets/hero.png" alt="base-fullstack" width="100%" />
+</p>
 
-A production-ready full-stack monorepo scaffold for building type-safe web applications. Clone and start shipping.
+<h1 align="center">base-fullstack</h1>
+
+<p align="center">
+  <strong>A production-ready full-stack monorepo scaffold for type-safe web apps.</strong><br/>
+  Clone it. Ship it.
+</p>
+
+<p align="center">
+  <a href="https://github.com/GuilhermeVozniak/base-fullstack/actions"><img src="https://github.com/GuilhermeVozniak/base-fullstack/actions/workflows/backend-ci.yml/badge.svg" alt="Backend CI" /></a>
+  <a href="https://github.com/GuilhermeVozniak/base-fullstack/actions"><img src="https://github.com/GuilhermeVozniak/base-fullstack/actions/workflows/web-ci.yml/badge.svg" alt="Web CI" /></a>
+  <a href="https://github.com/GuilhermeVozniak/base-fullstack/blob/main/LICENSE"><img src="https://img.shields.io/github/license/GuilhermeVozniak/base-fullstack" alt="License" /></a>
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick Start</a> &bull;
+  <a href="#stack">Stack</a> &bull;
+  <a href="#architecture">Architecture</a> &bull;
+  <a href="#scripts">Scripts</a> &bull;
+  <a href="#docker">Docker</a> &bull;
+  <a href="#claude-code-integration">Claude Code</a>
+</p>
+
+---
 
 ## Stack
 
-**Backend** — [Elysia](https://elysiajs.com/) on [Bun](https://bun.sh/) with [Drizzle ORM](https://orm.drizzle.team/) and [PostgreSQL](https://www.postgresql.org/)
+| Layer | Tech |
+|---|---|
+| **Runtime** | [Bun](https://bun.sh/) |
+| **Backend** | [Elysia](https://elysiajs.com/) &middot; [Drizzle ORM](https://orm.drizzle.team/) &middot; [PostgreSQL 17](https://www.postgresql.org/) &middot; [Zod 4](https://zod.dev/) |
+| **Frontend** | [Next.js 16](https://nextjs.org/) &middot; [React 19](https://react.dev/) &middot; [TanStack Query](https://tanstack.com/query) &middot; [Tailwind CSS 4](https://tailwindcss.com/) &middot; [shadcn/ui](https://ui.shadcn.com/) |
+| **Auth** | [Better Auth](https://www.better-auth.com/) — email/password, sessions, admin |
+| **Type Safety** | [Eden Treaty](https://elysiajs.com/eden/treaty/overview) — end-to-end types, zero codegen |
+| **Tooling** | [Biome](https://biomejs.dev/) &middot; [Lefthook](https://github.com/evilmartians/lefthook) &middot; [Commitlint](https://commitlint.js.org/) &middot; [Playwright](https://playwright.dev/) &middot; [Storybook](https://storybook.js.org/) |
+| **AI** | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — CLAUDE.md, skills, agents, GitHub Action |
 
-**Frontend** — [Next.js 16](https://nextjs.org/) with [React 19](https://react.dev/), [TanStack Query](https://tanstack.com/query), and [Tailwind CSS 4](https://tailwindcss.com/)
-
-**Auth** — [Better Auth](https://www.better-auth.com/) with email/password, secure sessions, and admin support
-
-**Shared** — End-to-end type safety via [Eden Treaty](https://elysiajs.com/eden/treaty/overview) and a shared types package
-
-## Monorepo Structure
-
-```
-base-fullstack/
-├── backend/            Elysia API server
-├── web/                Next.js frontend
-├── packages/
-│   └── shared/         Shared TypeScript types
-├── .github/            CI/CD workflows
-└── base-fullstack.code-workspace
-```
-
-## Getting Started
-
-### Prerequisites
-
-- [Bun](https://bun.sh/) >= 1.0
-- [Docker](https://www.docker.com/) (for PostgreSQL)
-
-### Setup
+## Quick Start
 
 ```bash
-# Clone the repo
-git clone https://github.com/YOUR_USER/base-fullstack.git
+git clone https://github.com/GuilhermeVozniak/base-fullstack.git
 cd base-fullstack
 
-# Start the backend
+# Backend
 cd backend
 cp .env.example .env
 bun install
 docker compose up -d
 bun run db:migrate
-bun run dev
+bun run dev                # http://localhost:3333  (Swagger at /swagger)
 
-# In a new terminal, start the frontend
+# Frontend (new terminal)
 cd web
 bun install
-bun run dev
+bun run dev                # http://localhost:3000
 ```
 
-The backend runs at `http://localhost:3333` and the frontend at `http://localhost:3000`.
+## Architecture
 
-## What's Included
+```
+base-fullstack/
+├── backend/                 Elysia API server
+│   ├── src/
+│   │   ├── modules/         Feature modules (handler → service → repository)
+│   │   ├── http/            Server, plugins, routes
+│   │   ├── database/        Drizzle schema & migrations
+│   │   └── auth.ts          Better Auth config
+│   ├── docker-compose.yml   Dev (Postgres + hot reload)
+│   └── Dockerfile           Production multi-stage build
+│
+├── web/                     Next.js 16 frontend
+│   ├── app/                 App Router pages
+│   ├── components/          shadcn/ui + custom components
+│   ├── lib/                 API client, hooks, utilities
+│   ├── messages/            i18n (en, pt)
+│   ├── e2e/                 Playwright tests
+│   └── Dockerfile           Production build (monorepo-aware)
+│
+├── packages/shared/         Shared TypeScript types (zero runtime)
+│
+├── .claude/                 Claude Code agents, skills & settings
+├── .github/                 CI/CD workflows + Claude Code Action
+└── CLAUDE.md                Project instructions for Claude
+```
 
-### Backend
+### End-to-End Type Safety
 
-- **Elysia** HTTP framework with plugin-based architecture
-- **Better Auth** with email/password, session management, and admin plugin
-- **Drizzle ORM** with PostgreSQL, migrations, and seeding
-- **Structured logging** via Pino with request IDs for tracing
-- **Security**: CORS, CSRF protection, rate limiting, input sanitization
-- **OpenAPI** auto-generated schema from auth endpoints
-- **Testing**: unit tests, integration tests, and repository tests with test containers
-- **Docker** setup for both development (hot reload + debugger) and production (multi-stage slim image)
-
-### Frontend
-
-- **Next.js 16** with App Router and standalone output for Docker
-- **Eden Treaty** type-safe API client — autocomplete on every backend route
-- **TanStack Query** with custom `useApiQuery` and `useApiMutation` hooks
-- **Better Auth** session middleware — protects routes, redirects to login
-- **Internationalization** via next-intl (English and Portuguese included)
-- **UI**: Radix UI + shadcn/ui components, dark mode via next-themes
-- **Testing**: Vitest for unit tests, Playwright for E2E
-- **Storybook** for component development and documentation
-
-### Shared Types
-
-The `@base-fullstack/shared` package provides end-to-end type safety without any runtime code:
+```
+Backend (Elysia)  ──exports──▶  @base-fullstack/shared  ──imports──▶  Frontend (Eden Treaty)
+     App type                      re-exports App                      treaty<App>(url)
+```
 
 ```typescript
-// web/lib/api.ts
-import type { App } from "@base-fullstack/shared"
-import { treaty } from "@elysiajs/eden"
-
+// One line gives you full autocomplete on every backend route
 export const api = treaty<App>(env.NEXT_PUBLIC_API_URL)
-// Full autocomplete: api.users[":id"].get(), api.health.get(), etc.
+
+api.users[":id"].get()     // typed params, typed response
+api.health.get()           // no codegen, no build step
 ```
 
-Types are resolved via TypeScript path aliases — no `npm link` or build step needed.
+### Backend Module Pattern
 
-### CI/CD
+Every feature follows a clean layered architecture:
 
-GitHub Actions workflows with path-based triggers:
+```
+modules/<feature>/
+├── routes.ts           Elysia route definitions
+├── handler/            HTTP handlers + Zod schemas
+├── service/            Business logic + DTOs + custom errors
+├── repository/         Drizzle queries + types
+└── __tests__/          Unit, integration & repository tests
+```
 
-**Backend CI** — lint, typecheck, unit tests, integration tests (with Postgres service)
+### Security
 
-**Web CI** — lint, typecheck, unit tests, Next.js build, Playwright E2E
-
-Both workflows use Bun, dependency caching, and concurrency groups to cancel stale runs.
-
-### Developer Experience
-
-- **Biome** for linting and formatting (fast, zero-config)
-- **Lefthook** git hooks: pre-commit (lint + unit tests), commit-msg (conventional commits), pre-push (full tests)
-- **Commitlint** enforcing [Conventional Commits](https://www.conventionalcommits.org/)
-- **Dependabot** for automated dependency updates
-- **VS Code workspace** with recommended extensions and shared settings
+CORS + CSRF origin validation + rate limiting (100 req/60s) + input sanitization + secure HTTP-only session cookies + request ID tracing.
 
 ## Scripts
 
-### Backend
+### Backend (`cd backend`)
 
-| Script | Description |
+| Script | What it does |
 |---|---|
 | `bun run dev` | Start with hot reload |
-| `bun run check` | Lint + format (Biome) |
+| `bun run check` | Biome lint + format |
 | `bun run typecheck` | TypeScript check |
-| `bun run test` | Run all tests |
-| `bun run test:unit` | Unit tests only |
-| `bun run test:int` | Integration tests |
-| `bun run test:repo` | Repository tests |
-| `bun run db:generate` | Generate migration |
+| `bun run test` | All tests |
+| `bun run test:unit` | Unit tests (mocked) |
+| `bun run test:int` | Integration tests (real HTTP) |
+| `bun run test:repo` | Repository tests (real Postgres) |
+| `bun run db:generate` | Generate Drizzle migration |
 | `bun run db:migrate` | Apply migrations |
 | `bun run db:seed` | Seed dev data |
 
-### Frontend
+### Frontend (`cd web`)
 
-| Script | Description |
+| Script | What it does |
 |---|---|
-| `bun run dev` | Start Next.js dev server |
+| `bun run dev` | Next.js dev server |
 | `bun run build` | Production build |
-| `bun run check` | Lint + format (Biome) |
+| `bun run check` | Biome lint + format |
 | `bun run typecheck` | TypeScript check |
-| `bun run test` | Run unit tests |
-| `bun run storybook` | Start Storybook |
+| `bun run test` | Vitest unit tests |
+| `bun run storybook` | Storybook on :6006 |
+| `bunx playwright test` | E2E tests |
 
 ## Docker
 
 ```bash
-# Development (backend + postgres with hot reload)
+# Development — backend + Postgres with hot reload
 cd backend && docker compose up
 
-# Production (backend)
+# Production — backend
 cd backend && docker compose -f docker-compose.prod.yml up
 
-# Production (frontend) — build from monorepo root
+# Production — frontend (build from monorepo root for type access)
 docker build -f web/Dockerfile -t base-fullstack-web .
 ```
 
+## CI/CD
+
+GitHub Actions with **path-based triggers** — only runs what changed:
+
+| Workflow | Jobs | Trigger |
+|---|---|---|
+| **Backend CI** | Lint, typecheck, unit tests, integration tests (Postgres service) | `backend/**`, `packages/**` |
+| **Web CI** | Lint, typecheck, unit tests, build, Playwright E2E | `web/**`, `packages/**` |
+| **Claude Code** | AI-powered PR review via `@claude` mention | PRs, issues, comments |
+
+Dependabot keeps dependencies fresh with weekly PRs grouped by type.
+
+## Claude Code Integration
+
+This repo is fully set up for [Claude Code](https://docs.anthropic.com/en/docs/claude-code):
+
+| File | Purpose |
+|---|---|
+| `CLAUDE.md` | Project context, conventions, architecture — Claude reads this first |
+| `.claude/settings.json` | Permissions (allowed/denied tools) |
+| `.claude/skills/new-module/` | Scaffold a backend module with one command |
+| `.claude/skills/new-page/` | Scaffold a frontend page with i18n |
+| `.claude/skills/db-migration/` | Create Drizzle migrations safely |
+| `.claude/agents/code-reviewer.md` | Automated code review agent |
+| `.claude/agents/test-runner.md` | Run and report test results |
+| `.mcp.json` | MCP servers (Postgres, GitHub) |
+| `.github/workflows/claude.yml` | GitHub Action — mention `@claude` on any PR |
+
+### Setup
+
+1. Add `ANTHROPIC_API_KEY` to your repo secrets
+2. Mention `@claude` on any PR or issue to get AI-powered reviews
+3. Use `/new-module users` or `/new-page dashboard` in Claude Code CLI
+
 ## License
 
-MIT
+[MIT](LICENSE) — fork it, ship it, make it yours.

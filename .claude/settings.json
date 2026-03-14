@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(bun *)",
+      "Bash(bunx *)",
+      "Bash(git *)",
+      "Bash(docker compose *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)"
+    ],
+    "deny": [
+      "Bash(sudo *)",
+      "Bash(rm -rf /)",
+      "Bash(git push --force *)",
+      "Bash(docker system prune *)",
+      "Write(backend/.env)",
+      "Write(web/.env.local)",
+      "Edit(backend/.env)",
+      "Edit(web/.env.local)",
+      "Edit(backend/src/database/migrations/*)"
+    ]
+  },
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
