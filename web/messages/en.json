@@ -9,5 +9,30 @@
   "notFound": {
     "title": "404",
     "description": "The page you're looking for doesn't exist."
+  },
+  "auth": {
+    "login": "Sign in",
+    "register": "Sign up",
+    "logout": "Sign out",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "loginTitle": "Welcome back",
+    "loginDescription": "Sign in to your account",
+    "registerTitle": "Create an account",
+    "registerDescription": "Get started with base-fullstack",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email address",
+    "passwordRequired": "Password is required",
+    "passwordMin": "Password must be at least 8 characters",
+    "nameRequired": "Name is required"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome, {name}",
+    "memberSince": "Member since {date}",
+    "userInfo": "Your Profile"
   }
 }
