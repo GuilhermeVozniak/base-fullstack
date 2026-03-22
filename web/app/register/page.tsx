@@ -60,7 +60,7 @@ export default function RegisterPage() {
       }
 
       router.push("/dashboard")
-    } catch (err) {
+    } catch (_err) {
       setError(t("common.error"))
     } finally {
       setIsLoading(false)

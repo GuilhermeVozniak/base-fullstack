@@ -10,7 +10,6 @@
     "frontendDist": "../web/out"
   },
   "app": {
-    "title": "Base Fullstack",
     "windows": [
       {
         "label": "main",

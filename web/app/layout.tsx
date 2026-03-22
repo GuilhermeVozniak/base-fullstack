@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { GeistMono } from "geist/font/mono"
 import { GeistSans } from "geist/font/sans"
+import type { Metadata } from "next"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { QueryProvider } from "@/components/providers/query-provider"
 import { ThemeProvider } from "@/components/providers/theme-provider"
