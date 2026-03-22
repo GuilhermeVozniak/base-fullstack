@@ -105,7 +105,7 @@ describe("useApiMutation hook", () => {
 
     expect(result.current.data).toEqual(mockData)
     expect(onSuccess).toHaveBeenCalled()
-    expect(onSuccess.mock.calls[0][0]).toEqual(mockData)
+    expect((onSuccess.mock.calls[0] as unknown[])[0]).toEqual(mockData)
   })
 
   it("handles mutation with variables", async () => {

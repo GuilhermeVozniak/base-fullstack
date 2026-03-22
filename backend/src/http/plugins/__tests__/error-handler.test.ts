@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "bun:test"
-import { Elysia } from "elysia"
 import { treaty } from "@elysiajs/eden"
+import { Elysia } from "elysia"
 import { errorHandler } from "@/http/plugins/error-handler"
 import { requestId } from "@/http/plugins/request-id"
 

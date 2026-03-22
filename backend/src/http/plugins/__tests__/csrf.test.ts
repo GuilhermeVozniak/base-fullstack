@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test"
-import { Elysia } from "elysia"
 import { treaty } from "@elysiajs/eden"
+import { Elysia } from "elysia"
 import { csrf } from "@/http/plugins/csrf"
 
 const createTestApp = () =>
