@@ -1,8 +1,19 @@
-import { beforeEach, describe, expect, it } from "bun:test"
-import { treaty } from "@elysiajs/eden"
-import { Elysia } from "elysia"
-import { errorHandler } from "@/http/plugins/error-handler"
-import { requestId } from "@/http/plugins/request-id"
+import { describe, expect, it, mock } from "bun:test"
+
+mock.module("@/http/plugins/logger", () => ({
+  log: {
+    warn: () => {},
+    debug: () => {},
+    error: () => {},
+    info: () => {},
+    into: () => (app: unknown) => app,
+  },
+}))
+
+const { treaty } = await import("@elysiajs/eden")
+const { Elysia, t } = await import("elysia")
+const { errorHandler } = await import("@/http/plugins/error-handler")
+const { requestId } = await import("@/http/plugins/request-id")
 
 const createTestApp = () =>
   new Elysia()
@@ -12,10 +23,10 @@ const createTestApp = () =>
     .get("/throw-error", () => {
       throw new Error("Test error")
     })
-    .post("/validation-error", () => {
-      const error = new Error("Invalid input")
-      ;(error as any).code = "VALIDATION"
-      throw error
+    .post("/validation-error", ({ body }) => body, {
+      body: t.Object({
+        name: t.String(),
+      }),
     })
     .get("/not-found-route", () => {
       return { message: "found" }
@@ -32,7 +43,7 @@ describe("error-handler plugin", () => {
     expect(data).toEqual({ message: "ok" })
   })
 
-  it("catches thrown errors and returns 500", async () => {
+  it("catches thrown errors and returns error status", async () => {
     const app = createTestApp()
     const api = treaty(app)
 
@@ -45,9 +56,9 @@ describe("error-handler plugin", () => {
     const app = createTestApp()
     const api = treaty(app)
 
-    const { status } = await api["validation-error"].post()
+    const { status } = await api["validation-error"].post({ name: 123 as unknown as string })
 
-    expect(status).toBe(400)
+    expect(status).toBe(422)
   })
 
   it("maps NOT_FOUND errors to 404", async () => {

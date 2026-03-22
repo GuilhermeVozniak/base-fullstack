@@ -1,13 +1,15 @@
 import { describe, expect, it } from "bun:test"
 import { treaty } from "@elysiajs/eden"
-import { Elysia } from "elysia"
+import { Elysia, t } from "elysia"
 import { sanitize } from "@/http/plugins/sanitize"
 
 const createTestApp = () =>
   new Elysia()
     .use(sanitize)
     .get("/test", () => ({ message: "ok" }))
-    .post("/echo", ({ body }: { body: unknown }) => body)
+    .post("/echo", ({ body }) => body, {
+      body: t.Any(),
+    })
 
 describe("sanitize plugin", () => {
   it("strips HTML tags from string fields", async () => {
@@ -32,7 +34,7 @@ describe("sanitize plugin", () => {
     })
 
     expect(data).toEqual({
-      content: "img srcu onerroralertxss",
+      content: "",
     })
   })
 
@@ -49,7 +51,7 @@ describe("sanitize plugin", () => {
 
     expect(data).toEqual({
       user: {
-        name: "bJohnb",
+        name: "John",
         bio: "Hello alert('hi') world",
       },
     })
@@ -64,7 +66,7 @@ describe("sanitize plugin", () => {
     })
 
     expect(data).toEqual({
-      tags: ["scriptevilscript", "normal", "img"],
+      tags: ["evil", "normal", ""],
     })
   })
 
@@ -99,9 +101,9 @@ describe("sanitize plugin", () => {
     })
 
     expect(data).toEqual({
-      title: "h1Titleh1",
+      title: "Title",
       count: 10,
-      description: "pDescp",
+      description: "Desc",
       active: true,
     })
   })
@@ -134,7 +136,7 @@ describe("sanitize plugin", () => {
       level1: {
         level2: {
           level3: {
-            text: "divDepdiv",
+            text: "Deep",
           },
         },
       },

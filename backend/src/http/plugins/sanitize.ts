@@ -13,9 +13,11 @@ function stripHtml(value: unknown): unknown {
   return value
 }
 
-export const sanitize = new Elysia({ name: "sanitize" }).onBeforeHandle(({ body }) => {
-  if (body && typeof body === "object") {
-    const sanitized = stripHtml(body)
-    Object.assign(body, sanitized)
-  }
-})
+export const sanitize = new Elysia({ name: "sanitize" })
+  .onBeforeHandle(({ body }) => {
+    if (body && typeof body === "object") {
+      const sanitized = stripHtml(body)
+      Object.assign(body, sanitized)
+    }
+  })
+  .as("global")
