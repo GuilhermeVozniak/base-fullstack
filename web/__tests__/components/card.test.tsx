@@ -1,16 +1,20 @@
-import { describe, it, expect } from "bun:test"
-import { render } from "@testing-library/react"
+import { afterEach, describe, expect, it } from "bun:test"
+import { cleanup, render } from "@testing-library/react"
 import {
   Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-  CardAction,
-  CardFooter,
 } from "@/components/ui/card"
 
 describe("Card components", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
   describe("Card", () => {
     it("renders with data-slot attribute", () => {
       const { container } = render(<Card>Test Card</Card>)

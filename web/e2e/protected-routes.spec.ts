@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test"
+import { expect, test } from "@playwright/test"
 
 test.describe("Protected Routes", () => {
   test("redirects unauthenticated user from /dashboard to /login", async ({ page }) => {

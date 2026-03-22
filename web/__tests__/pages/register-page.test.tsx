@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, mock } from "bun:test"
-import { render, screen } from "@testing-library/react"
-import RegisterPage from "@/app/register/page"
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test"
+import { cleanup, render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
+import RegisterPage from "@/app/register/page"
 
 // Mock next/navigation
 mock.module("next/navigation", () => ({
@@ -50,7 +50,8 @@ const mockTranslations = {
 }
 
 mock.module("next-intl", () => ({
-  useTranslations: () => (key: string) => mockTranslations[key as keyof typeof mockTranslations] || key,
+  useTranslations: () => (key: string) =>
+    mockTranslations[key as keyof typeof mockTranslations] || key,
 }))
 
 const createRegisterPageWrapper = () => {
@@ -62,6 +63,10 @@ const createRegisterPageWrapper = () => {
 }
 
 describe("RegisterPage component", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
   beforeEach(() => {
     mockSignUp.mockClear?.()
   })
@@ -91,7 +96,9 @@ describe("RegisterPage component", () => {
   it("renders title and description", () => {
     render(<RegisterPage />, { wrapper: createRegisterPageWrapper() })
 
-    expect(screen.getByText(/Register/)).toBeDefined()
+    const title = document.querySelector('[data-slot="card-title"]')
+    expect(title).toBeDefined()
+    expect(title?.textContent).toContain("Register")
     expect(screen.getByText(/Create a new account/)).toBeDefined()
   })
 

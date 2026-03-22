@@ -1,6 +1,6 @@
-import { describe, it, expect } from "bun:test"
-import { middleware, config } from "@/middleware"
+import { describe, expect, it } from "bun:test"
 import { NextRequest, NextResponse } from "next/server"
+import { config, middleware } from "@/middleware"
 
 describe("middleware", () => {
   const createRequest = (

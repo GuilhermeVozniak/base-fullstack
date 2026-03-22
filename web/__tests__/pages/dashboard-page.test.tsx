@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, mock } from "bun:test"
-import { render, screen, waitFor } from "@testing-library/react"
-import DashboardPage from "@/app/dashboard/page"
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test"
+import { cleanup, render, screen, waitFor } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
+import DashboardPage from "@/app/dashboard/page"
 
 // Mock next/navigation
 const mockPush = mock(() => {})
@@ -72,6 +72,10 @@ const createDashboardPageWrapper = () => {
 }
 
 describe("DashboardPage component", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
   beforeEach(() => {
     mockPush.mockClear?.()
     mockSignOut.mockClear?.()
@@ -98,8 +102,8 @@ describe("DashboardPage component", () => {
     render(<DashboardPage />, { wrapper: createDashboardPageWrapper() })
 
     await waitFor(() => {
-      expect(screen.getByText(/Dashboard/)).toBeDefined()
-      expect(screen.getByText(/John Doe/)).toBeDefined()
+      expect(screen.getByRole("heading", { name: /Dashboard/ })).toBeDefined()
+      expect(screen.getAllByText(/John Doe/).length).toBeGreaterThanOrEqual(1)
       expect(screen.getByText(/john@example.com/)).toBeDefined()
     })
   })

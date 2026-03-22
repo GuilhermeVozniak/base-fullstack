@@ -1,11 +1,12 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -18,7 +19,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { signUp } from "@/lib/auth-client"
-import { useState } from "react"
 
 const registerSchema = z.object({
   name: z.string().min(1, "auth.nameRequired"),

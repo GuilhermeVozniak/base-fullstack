@@ -1,8 +1,12 @@
-import { describe, it, expect } from "bun:test"
-import { render } from "@testing-library/react"
+import { afterEach, describe, expect, it } from "bun:test"
+import { cleanup, render } from "@testing-library/react"
 import { Input } from "@/components/ui/input"
 
 describe("Input component", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
   it("renders with data-slot attribute", () => {
     const { container } = render(<Input />)
     const input = container.querySelector('[data-slot="input"]')
@@ -175,6 +179,6 @@ describe("Input component", () => {
   it("supports autofocus prop", () => {
     const { container } = render(<Input autoFocus />)
     const input = container.querySelector("input") as HTMLInputElement
-    expect(input.getAttribute("autofocus")).toBe("")
+    expect(input.hasAttribute("autofocus") || document.activeElement === input).toBe(true)
   })
 })

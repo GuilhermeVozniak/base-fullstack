@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, mock } from "bun:test"
-import { render, screen, waitFor } from "@testing-library/react"
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test"
+import { cleanup, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import LoginPage from "@/app/login/page"
 import { NextIntlClientProvider } from "next-intl"
+import LoginPage from "@/app/login/page"
 
 // Mock next/navigation
 mock.module("next/navigation", () => ({
@@ -55,7 +55,8 @@ const mockTranslations = {
 }
 
 mock.module("next-intl", () => ({
-  useTranslations: () => (key: string) => mockTranslations[key as keyof typeof mockTranslations] || key,
+  useTranslations: () => (key: string) =>
+    mockTranslations[key as keyof typeof mockTranslations] || key,
 }))
 
 const createLoginPageWrapper = () => {
@@ -67,6 +68,10 @@ const createLoginPageWrapper = () => {
 }
 
 describe("LoginPage component", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
   beforeEach(() => {
     mockSignIn.mockClear?.()
   })
@@ -95,7 +100,9 @@ describe("LoginPage component", () => {
   it("renders title and description", () => {
     render(<LoginPage />, { wrapper: createLoginPageWrapper() })
 
-    expect(screen.getByText(/Login/)).toBeDefined()
+    const title = document.querySelector('[data-slot="card-title"]')
+    expect(title).toBeDefined()
+    expect(title?.textContent).toContain("Login")
     expect(screen.getByText(/Sign in to your account/)).toBeDefined()
   })
 
