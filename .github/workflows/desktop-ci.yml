@@ -1,0 +1,163 @@
+name: Desktop CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "desktop/**"
+      - "packages/**"
+      - ".github/workflows/desktop-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "desktop/**"
+      - "packages/**"
+      - ".github/workflows/desktop-ci.yml"
+
+concurrency:
+  group: desktop-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-desktop-${{ hashFiles('desktop/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-desktop-
+
+      - name: Install dependencies
+        run: bun install
+        working-directory: desktop
+
+      - name: Run Biome check
+        run: bun run check
+        working-directory: desktop
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-desktop-${{ hashFiles('desktop/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-desktop-
+
+      - name: Install dependencies
+        run: bun install
+        working-directory: desktop
+
+      - name: Run TypeScript type check
+        run: bun run typecheck
+        working-directory: desktop
+
+  rust-check:
+    name: Rust Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            desktop/src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('desktop/src-tauri/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Rust clippy
+        run: cargo clippy -- -D warnings
+        working-directory: desktop/src-tauri
+
+      - name: Rust format check
+        run: cargo fmt -- --check
+        working-directory: desktop/src-tauri
+
+  build:
+    name: Build Desktop App
+    needs: [lint, typecheck, rust-check]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install system dependencies (Linux)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            desktop/src-tauri/target
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('desktop/src-tauri/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-build-
+
+      - name: Install web dependencies
+        run: bun install
+        working-directory: web
+
+      - name: Install desktop dependencies
+        run: bun install
+        working-directory: desktop
+
+      - name: Build desktop app
+        run: bun run build
+        working-directory: desktop
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ""
+          NEXT_PUBLIC_API_URL: http://localhost:3333

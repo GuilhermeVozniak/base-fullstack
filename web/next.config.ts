@@ -30,8 +30,13 @@ const securityHeaders = [
   },
 ]
 
+const isTauri = !!process.env.TAURI_ENV_PLATFORM
+
 const nextConfig: NextConfig = {
-  output: "standalone",
+  output: isTauri ? "export" : "standalone",
+  ...(isTauri && {
+    images: { unoptimized: true },
+  }),
   typescript: {
     // Type checking is enforced in CI. Skipped during Docker builds where
     // sibling repos (packages/shared, backend) aren't in the build context.

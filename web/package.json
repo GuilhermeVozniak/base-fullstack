@@ -6,6 +6,7 @@
     "postinstall": "bunx lefthook install",
     "dev": "next dev",
     "build": "next build",
+    "build:desktop": "TAURI_ENV_PLATFORM=desktop next build",
     "start": "next start",
     "lint": "biome lint .",
     "lint:fix": "biome check --fix .",
