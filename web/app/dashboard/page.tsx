@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useSession, signOut } from "@/lib/auth-client"
-import { useState, useEffect } from "react"
+import { signOut, useSession } from "@/lib/auth-client"
 
 export default function DashboardPage() {
   const router = useRouter()

@@ -1,11 +1,15 @@
-import { describe, it, expect, beforeEach, mock } from "bun:test"
-import { renderHook, waitFor } from "@testing-library/react"
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { useApiMutation } from "@/lib/hooks/use-api-mutation"
+import { cleanup, renderHook, waitFor } from "@testing-library/react"
 import type { ReactNode } from "react"
+import { useApiMutation } from "@/lib/hooks/use-api-mutation"
 
 describe("useApiMutation hook", () => {
   let queryClient: QueryClient
+
+  afterEach(() => {
+    cleanup()
+  })
 
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -19,9 +23,7 @@ describe("useApiMutation hook", () => {
 
   const createWrapper = () => {
     return ({ children }: { children: ReactNode }) => (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     )
   }
 
@@ -34,7 +36,11 @@ describe("useApiMutation hook", () => {
 
     const { result } = renderHook(
       () =>
-        useApiMutation(mutationFn as (variables: { name: string }) => Promise<{ data: typeof mockData; error: null }>),
+        useApiMutation(
+          mutationFn as (variables: {
+            name: string
+          }) => Promise<{ data: typeof mockData; error: null }>
+        ),
       { wrapper: createWrapper() }
     )
 
@@ -58,7 +64,8 @@ describe("useApiMutation hook", () => {
     }))
 
     const { result } = renderHook(
-      () => useApiMutation(mutationFn as (variables: void) => Promise<{ data: null; error: Error }>),
+      () =>
+        useApiMutation(mutationFn as (variables: void) => Promise<{ data: null; error: Error }>),
       { wrapper: createWrapper() }
     )
 
@@ -81,9 +88,12 @@ describe("useApiMutation hook", () => {
 
     const { result } = renderHook(
       () =>
-        useApiMutation(mutationFn as (variables: void) => Promise<{ data: typeof mockData; error: null }>, {
-          onSuccess: onSuccess as any,
-        }),
+        useApiMutation(
+          mutationFn as (variables: void) => Promise<{ data: typeof mockData; error: null }>,
+          {
+            onSuccess: onSuccess as any,
+          }
+        ),
       { wrapper: createWrapper() }
     )
 
@@ -94,7 +104,8 @@ describe("useApiMutation hook", () => {
     })
 
     expect(result.current.data).toEqual(mockData)
-    expect(onSuccess).toHaveBeenCalledWith(mockData)
+    expect(onSuccess).toHaveBeenCalled()
+    expect((onSuccess.mock.calls[0] as unknown[])[0]).toEqual(mockData)
   })
 
   it("handles mutation with variables", async () => {
@@ -121,7 +132,12 @@ describe("useApiMutation hook", () => {
     }))
 
     const { result } = renderHook(
-      () => useApiMutation(mutationFn as (variables: CreateUserInput) => Promise<{ data: CreateUserResponse; error: null }>),
+      () =>
+        useApiMutation(
+          mutationFn as (
+            variables: CreateUserInput
+          ) => Promise<{ data: CreateUserResponse; error: null }>
+        ),
       { wrapper: createWrapper() }
     )
 
@@ -148,7 +164,10 @@ describe("useApiMutation hook", () => {
     }
 
     const { result } = renderHook(
-      () => useApiMutation(mutationFn as (variables: void) => Promise<{ data: { success: boolean }; error: null }>),
+      () =>
+        useApiMutation(
+          mutationFn as (variables: void) => Promise<{ data: { success: boolean }; error: null }>
+        ),
       { wrapper: createWrapper() }
     )
 
@@ -156,7 +175,9 @@ describe("useApiMutation hook", () => {
 
     result.current.mutate(undefined)
 
-    expect(result.current.isPending).toBe(true)
+    await waitFor(() => {
+      expect(result.current.isPending).toBe(true)
+    })
 
     resolvePromise!()
 
@@ -173,7 +194,10 @@ describe("useApiMutation hook", () => {
     })
 
     const { result } = renderHook(
-      () => useApiMutation(mutationFn as (variables: void) => Promise<{ data: typeof mockData; error: null }>),
+      () =>
+        useApiMutation(
+          mutationFn as (variables: void) => Promise<{ data: typeof mockData; error: null }>
+        ),
       { wrapper: createWrapper() }
     )
 
@@ -185,7 +209,9 @@ describe("useApiMutation hook", () => {
 
     result.current.reset()
 
-    expect(result.current.data).toBeUndefined()
-    expect(result.current.isSuccess).toBe(false)
+    await waitFor(() => {
+      expect(result.current.data).toBeUndefined()
+      expect(result.current.isSuccess).toBe(false)
+    })
   })
 })

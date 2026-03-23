@@ -1,11 +1,15 @@
-import { describe, it, expect, beforeEach, mock } from "bun:test"
-import { renderHook, waitFor } from "@testing-library/react"
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { useApiQuery } from "@/lib/hooks/use-api-query"
+import { cleanup, renderHook, waitFor } from "@testing-library/react"
 import type { ReactNode } from "react"
+import { useApiQuery } from "@/lib/hooks/use-api-query"
 
 describe("useApiQuery hook", () => {
   let queryClient: QueryClient
+
+  afterEach(() => {
+    cleanup()
+  })
 
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -19,9 +23,7 @@ describe("useApiQuery hook", () => {
 
   const createWrapper = () => {
     return ({ children }: { children: ReactNode }) => (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     )
   }
 
@@ -75,10 +77,14 @@ describe("useApiQuery hook", () => {
 
     const { result } = renderHook(
       () =>
-        useApiQuery(["test-options"], fetcher as () => Promise<{ data: typeof mockData; error: null }>, {
-          staleTime: 1000 * 60 * 5,
-          gcTime: 1000 * 60 * 10,
-        }),
+        useApiQuery(
+          ["test-options"],
+          fetcher as () => Promise<{ data: typeof mockData; error: null }>,
+          {
+            staleTime: 1000 * 60 * 5,
+            gcTime: 1000 * 60 * 10,
+          }
+        ),
       { wrapper: createWrapper() }
     )
 
@@ -99,7 +105,8 @@ describe("useApiQuery hook", () => {
     }))
 
     const { result } = renderHook(
-      ({ key }) => useApiQuery(key, fetcher as () => Promise<{ data: typeof mockData1; error: null }>),
+      ({ key }) =>
+        useApiQuery(key, fetcher as () => Promise<{ data: typeof mockData1; error: null }>),
       {
         wrapper: createWrapper(),
         initialProps: { key: ["test", 1] },

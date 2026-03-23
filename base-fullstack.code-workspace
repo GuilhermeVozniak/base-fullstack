@@ -12,12 +12,17 @@
       "name": "📦 Shared",
       "path": "packages",
     },
+    {
+      "name": "🖥️ Desktop",
+      "path": "desktop",
+    },
   ],
   "settings": {
     "files.exclude": {
       "**/node_modules": true,
       "**/.git": true,
       "**/bun.lock": true,
+      "**/src-tauri/target": true,
     },
     "search.exclude": {
       "**/node_modules": true,
@@ -25,6 +30,7 @@
       "**/.expo": true,
       "**/ios": true,
       "**/android": true,
+      "**/src-tauri/target": true,
     },
     "files.eol": "\n",
     "files.insertFinalNewline": true,
@@ -44,6 +50,8 @@
       "esbenp.prettier-vscode",
       "bradlc.vscode-tailwindcss",
       "expo.vscode-expo-tools",
+      "rust-lang.rust-analyzer",
+      "tauri-apps.tauri-vscode",
     ],
     "unwantedRecommendations": [],
   },

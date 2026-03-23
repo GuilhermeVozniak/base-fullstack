@@ -1,11 +1,12 @@
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation"
-import Link from "next/link"
-import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
+import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -18,7 +19,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { signIn } from "@/lib/auth-client"
-import { useState } from "react"
 
 const loginSchema = z.object({
   email: z.string().min(1, "auth.emailRequired").email("auth.emailInvalid"),

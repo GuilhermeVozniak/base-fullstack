@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Production-ready full-stack monorepo scaffold. Elysia (Bun) backend + Next.js 16 frontend + shared types for end-to-end type safety via Eden Treaty.
+Production-ready full-stack monorepo scaffold. Elysia (Bun) backend + Next.js 16 frontend + Tauri v2 desktop app + shared types for end-to-end type safety via Eden Treaty.
 
 ## Monorepo Layout
 
@@ -10,6 +10,7 @@ Production-ready full-stack monorepo scaffold. Elysia (Bun) backend + Next.js 16
 base-fullstack/
 ├── backend/            Elysia API (Bun runtime)
 ├── web/                Next.js 16 + React 19
+├── desktop/            Tauri v2 desktop app (wraps web frontend)
 ├── packages/shared/    Shared TypeScript types (types-only, no runtime)
 └── .github/            CI/CD workflows
 ```
@@ -18,6 +19,7 @@ base-fullstack/
 
 - **Backend**: Elysia 1.4 on Bun, Better Auth, Drizzle ORM, PostgreSQL 17, Zod 4
 - **Frontend**: Next.js 16, React 19, TanStack Query, Eden Treaty, Tailwind CSS 4, shadcn/ui
+- **Desktop**: Tauri 2, Rust, wraps Next.js frontend via SSG
 - **Shared**: TypeScript path aliases — no build step, no npm link
 - **Tooling**: Biome (lint/format), Lefthook (git hooks), Commitlint (conventional commits)
 
@@ -113,10 +115,21 @@ cd backend && bun install && docker compose up -d && bun run db:migrate && bun r
 
 # Frontend
 cd web && bun install && bun run dev
+
+# Desktop (requires Rust toolchain + system dependencies)
+cd desktop && bun install && bun run dev
 ```
 
 Backend: http://localhost:3333 (Swagger at /swagger)
 Frontend: http://localhost:3000
+
+### Desktop Prerequisites
+
+- [Rust toolchain](https://rustup.rs/) (stable)
+- System dependencies for Tauri v2:
+  - **Linux**: `libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf`
+  - **macOS**: Xcode Command Line Tools
+  - **Windows**: Microsoft Visual Studio C++ Build Tools, WebView2
 
 ## Testing
 
@@ -199,9 +212,10 @@ NEXT_PUBLIC_API_URL=http://localhost:3333
 
 ## CI/CD
 
-Two workflows triggered by path changes:
+Three workflows triggered by path changes:
 - `backend-ci.yml`: lint → typecheck → unit tests → integration tests (Postgres service)
 - `web-ci.yml`: lint → typecheck → unit tests → build → Playwright E2E
+- `desktop-ci.yml`: lint → typecheck → Rust clippy/fmt → cross-platform build (Linux, macOS, Windows)
 
 ## Do NOT
 

@@ -54,3 +54,6 @@ storybook-static
 *.bun
 package-lock.json
 
+# tauri / rust
+**/src-tauri/target/
+

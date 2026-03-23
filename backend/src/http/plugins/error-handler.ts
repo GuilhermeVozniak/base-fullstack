@@ -1,14 +1,14 @@
 import { Elysia } from "elysia"
 import { log } from "@/http/plugins/logger"
 
-export const errorHandler = new Elysia({ name: "error-handler" }).onError(
-  ({ code, error, request, path }) => {
+export const errorHandler = new Elysia({ name: "error-handler" })
+  .onError(({ code, error, request, path }) => {
     const errorContext = {
-      requestId: request.headers.get("x-request-id"),
+      requestId: request?.headers?.get("x-request-id") ?? undefined,
       code,
       path,
-      method: request.method,
-      url: request.url,
+      method: request?.method,
+      url: request?.url,
       message: "message" in error ? error.message : String(error),
       stack: process.env.NODE_ENV !== "production" && "stack" in error ? error.stack : undefined,
       timestamp: new Date().toISOString(),
@@ -21,5 +21,5 @@ export const errorHandler = new Elysia({ name: "error-handler" }).onError(
     } else {
       log.error(errorContext, "Unhandled error")
     }
-  }
-)
+  })
+  .as("global")

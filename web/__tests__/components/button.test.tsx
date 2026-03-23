@@ -1,8 +1,12 @@
-import { describe, expect, test } from "bun:test"
-import { render, screen } from "@testing-library/react"
+import { afterEach, describe, expect, test } from "bun:test"
+import { cleanup, render, screen } from "@testing-library/react"
 import { Button } from "@/components/ui/button"
 
 describe("Button component", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
   test("renders with text", () => {
     render(<Button>Click me</Button>)
     expect(screen.getByRole("button", { name: "Click me" })).toBeDefined()

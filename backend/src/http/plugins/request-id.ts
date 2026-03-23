@@ -9,3 +9,4 @@ export const requestId = new Elysia({ name: "request-id" })
   .onAfterHandle(({ requestId, set }) => {
     set.headers["x-request-id"] = requestId
   })
+  .as("global")
