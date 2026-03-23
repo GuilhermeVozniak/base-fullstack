@@ -1,6 +1,6 @@
 #[tauri::command]
 fn greet(name: &str) -> String {
-    format!("Hello, {}! Welcome to Base Fullstack Desktop.", name)
+    format!("Hello, {name}! Welcome to Base Fullstack Desktop.")
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
