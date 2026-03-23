@@ -148,8 +148,12 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: Install web dependencies
-        run: bun install
+        run: bun install --frozen-lockfile
         working-directory: web
+
+      - name: Install backend dependencies (for type resolution)
+        run: bun install --frozen-lockfile
+        working-directory: backend
 
       - name: Install desktop dependencies
         run: bun install
@@ -159,5 +163,6 @@ jobs:
         run: bun run build
         working-directory: desktop
         env:
+          NODE_ENV: production
           TAURI_SIGNING_PRIVATE_KEY: ""
           NEXT_PUBLIC_API_URL: http://localhost:3333
