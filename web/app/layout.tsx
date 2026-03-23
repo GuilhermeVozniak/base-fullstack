@@ -1,6 +1,8 @@
 import { GeistMono } from "geist/font/mono"
 import { GeistSans } from "geist/font/sans"
 import type { Metadata } from "next"
+import { NextIntlClientProvider } from "next-intl"
+import { getLocale, getMessages } from "next-intl/server"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { QueryProvider } from "@/components/providers/query-provider"
 import { ThemeProvider } from "@/components/providers/theme-provider"
@@ -12,13 +14,16 @@ export const metadata: Metadata = {
   description: "Full-stack monorepo scaffold",
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const locale = await getLocale()
+  const messages = await getMessages()
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
@@ -26,9 +31,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NuqsAdapter>
-            <QueryProvider>{children}</QueryProvider>
-          </NuqsAdapter>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <NuqsAdapter>
+              <QueryProvider>{children}</QueryProvider>
+            </NuqsAdapter>
+          </NextIntlClientProvider>
           <Toaster />
         </ThemeProvider>
       </body>
